@@ -1,10 +1,9 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { Bot, Package, ShoppingCart } from "lucide-react";
+import { Bot, X, MessageSquare } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Separator } from "@/components/ui/separator";
 import { useToast } from "@/components/ui/use-toast";
 import {
   Select,
@@ -215,6 +214,7 @@ export const ChatBot = () => {
   const [currentOptions, setCurrentOptions] = useState<ConversationOption[]>(CONVERSATION_FLOW.main);
   const [currentStep, setCurrentStep] = useState<string>("main");
   const [selectedOption, setSelectedOption] = useState<string>("");
+  const [isOpen, setIsOpen] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -268,79 +268,104 @@ export const ChatBot = () => {
     }, 500);
   };
 
+  const toggleChat = () => {
+    setIsOpen(!isOpen);
+  };
+
   return (
-    <div className="flex flex-col h-[600px] max-w-full">
-      <div className="flex items-center gap-2 bg-blue-600 text-white p-3 rounded-t-lg">
-        <Bot className="h-6 w-6" />
-        <h2 className="text-lg font-medium">ProcureBot</h2>
-      </div>
-      
-      <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
-        {messages.map((message) => (
-          <div
-            key={message.id}
-            className={`mb-4 flex ${
-              message.role === "user" ? "justify-end" : "justify-start"
-            }`}
-          >
-            <div
-              className={`max-w-[80%] rounded-lg px-4 py-2 ${
-                message.role === "user"
-                  ? "bg-blue-600 text-white"
-                  : "bg-white text-slate-800 border border-slate-200 shadow-sm"
-              }`}
+    <div className="fixed bottom-5 right-5 z-50">
+      {isOpen ? (
+        <div className="flex flex-col h-[500px] w-[350px] shadow-lg rounded-lg overflow-hidden">
+          <div className="flex items-center justify-between bg-purple-600 text-white p-3">
+            <div className="flex items-center gap-2">
+              <Bot className="h-6 w-6" />
+              <h2 className="text-lg font-medium">ProcureBot</h2>
+            </div>
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="text-white hover:bg-purple-700"
+              onClick={toggleChat}
             >
-              <p className="whitespace-pre-wrap">{message.content}</p>
+              <X className="h-5 w-5" />
+            </Button>
+          </div>
+          
+          <div className="flex-1 overflow-y-auto p-4 bg-slate-50">
+            {messages.map((message) => (
               <div
-                className={`text-xs mt-1 ${
-                  message.role === "user" ? "text-blue-100" : "text-slate-400"
+                key={message.id}
+                className={`mb-4 flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
                 }`}
               >
-                {message.timestamp.toLocaleTimeString([], {
-                  hour: "2-digit",
-                  minute: "2-digit",
-                })}
+                <div
+                  className={`max-w-[80%] rounded-lg px-4 py-2 ${
+                    message.role === "user"
+                      ? "bg-purple-600 text-white"
+                      : "bg-white text-slate-800 border border-slate-200 shadow-sm"
+                  }`}
+                >
+                  <p className="whitespace-pre-wrap">{message.content}</p>
+                  <div
+                    className={`text-xs mt-1 ${
+                      message.role === "user" ? "text-purple-100" : "text-slate-400"
+                    }`}
+                  >
+                    {message.timestamp.toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
+                  </div>
+                </div>
+              </div>
+            ))}
+            <div ref={messagesEndRef} />
+          </div>
+
+          <div className="border-t p-3 bg-white">
+            <div className="flex flex-col gap-3">
+              <Select value={selectedOption} onValueChange={handleOptionSelect}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Select an option..." />
+                </SelectTrigger>
+                <SelectContent position="popper">
+                  {currentOptions.map((option) => (
+                    <SelectItem key={option.id} value={option.id}>
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              <div className="flex flex-wrap gap-2">
+                {currentOptions.map((option) => (
+                  <Button
+                    key={option.id}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handleOptionSelect(option.id)}
+                    className="flex-grow"
+                  >
+                    {option.label}
+                  </Button>
+                ))}
+              </div>
+              
+              <div className="text-xs text-slate-500 mt-1">
+                Select an option to proceed with your procurement request
               </div>
             </div>
           </div>
-        ))}
-        <div ref={messagesEndRef} />
-      </div>
-
-      <div className="border-t p-3 bg-white rounded-b-lg">
-        <div className="flex flex-col gap-3">
-          <Select value={selectedOption} onValueChange={handleOptionSelect}>
-            <SelectTrigger className="w-full">
-              <SelectValue placeholder="Select an option..." />
-            </SelectTrigger>
-            <SelectContent position="popper">
-              {currentOptions.map((option) => (
-                <SelectItem key={option.id} value={option.id}>
-                  {option.label}
-                </SelectItem>
-              ))}
-            </SelectContent>
-          </Select>
-          
-          <div className="flex flex-wrap gap-2">
-            {currentOptions.map((option) => (
-              <Button
-                key={option.id}
-                variant="outline"
-                size="sm"
-                onClick={() => handleOptionSelect(option.id)}
-                className="flex-grow"
-              >
-                {option.label}
-              </Button>
-            ))}
-          </div>
-          
-          <div className="text-xs text-slate-500 mt-1">
-            Select an option to proceed with your procurement request
-          </div>
         </div>
-      </div>
+      ) : (
+        <Button
+          onClick={toggleChat}
+          className="h-14 w-14 rounded-full bg-purple-600 hover:bg-purple-700 flex items-center justify-center shadow-lg"
+        >
+          <MessageSquare className="h-6 w-6" />
+        </Button>
+      )}
     </div>
   );
 };

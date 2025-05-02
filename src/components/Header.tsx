@@ -1,6 +1,6 @@
 
 import React from "react";
-import { ShoppingCart, Bell, Settings, User } from "lucide-react";
+import { Bell, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { 
@@ -12,26 +12,22 @@ import {
 
 export const Header = () => {
   return (
-    <header className="bg-white border-b px-4 py-3">
+    <header className="bg-white px-4 py-3 shadow-sm">
       <div className="container mx-auto flex items-center justify-between">
         <div className="flex items-center">
           <div className="flex items-center">
-            <ShoppingCart className="h-6 w-6 text-blue-600" />
-            <span className="ml-2 text-xl font-bold text-slate-800">ProcureBuddy</span>
+            <div className="h-9 w-9 bg-purple-700 rounded-md flex items-center justify-center">
+              <span className="text-xl font-bold text-white">P</span>
+            </div>
+            <span className="ml-2 text-xl font-bold text-slate-800">ProcUrPal</span>
           </div>
-          <nav className="hidden md:flex ml-10">
-            <Button variant="link" className="text-slate-600 hover:text-slate-900">Dashboard</Button>
-            <Button variant="link" className="text-slate-600 hover:text-slate-900">Catalog</Button>
-            <Button variant="link" className="text-slate-600 hover:text-slate-900">Orders</Button>
-            <Button variant="link" className="text-slate-600 hover:text-slate-900">Vendors</Button>
-          </nav>
         </div>
         <div className="flex items-center space-x-4">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="ghost" size="icon" className="relative">
                 <Bell className="h-5 w-5" />
-                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0">
+                <Badge className="absolute -top-1 -right-1 h-5 w-5 flex items-center justify-center p-0 bg-purple-600">
                   3
                 </Badge>
               </Button>
@@ -57,12 +53,15 @@ export const Header = () => {
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
-          <Button variant="ghost" size="icon">
-            <Settings className="h-5 w-5" />
-          </Button>
-          <Button variant="ghost" size="icon">
-            <User className="h-5 w-5" />
-          </Button>
+          <div className="flex items-center gap-2 bg-gray-100 rounded-full p-2">
+            <div className="h-8 w-8 rounded-full bg-black flex items-center justify-center text-white">
+              <User className="h-5 w-5" />
+            </div>
+            <div className="hidden md:block pr-2">
+              <div className="text-sm font-medium">BrightVision</div>
+              <div className="text-xs text-gray-500">nikmath@procurpal.in</div>
+            </div>
+          </div>
         </div>
       </div>
     </header>
