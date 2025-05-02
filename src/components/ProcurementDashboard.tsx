@@ -1,8 +1,91 @@
 
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+  ChartLegend,
+  ChartLegendContent,
+} from "@/components/ui/chart";
+import {
+  BarChart,
+  Bar,
+  PieChart,
+  Pie,
+  Cell,
+  ResponsiveContainer,
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  Legend,
+} from "recharts";
+import { ChartBarStacked, ChartBar, ChartPie, ChartLine } from "lucide-react";
 
 export const ProcurementDashboard = () => {
+  // Data for the event status chart
+  const eventStatusData = [
+    { name: "RFP", completed: 11, inProgress: 7, pending: 5 },
+    { name: "RFQ", completed: 4, inProgress: 5, pending: 2 },
+    { name: "RFI", completed: 6, inProgress: 8, pending: 2 },
+  ];
+
+  // Data for the budget allocation pie chart
+  const budgetData = [
+    { name: "IT Equipment", value: 2.2, color: "#8B5CF6" },
+    { name: "Office Supplies", value: 1.4, color: "#EC4899" },
+    { name: "Services", value: 1.1, color: "#14B8A6" },
+    { name: "Manufacturing", value: 0.9, color: "#F59E0B" },
+  ];
+
+  // Data for the savings trend chart
+  const savingsData = [
+    { month: "Jan", savings: 0.1 },
+    { month: "Feb", savings: 0.3 },
+    { month: "Mar", savings: 0.4 },
+    { month: "Apr", savings: 0.7 },
+    { month: "May", savings: 1.0 },
+  ];
+
+  // Config for the charts
+  const chartConfig = {
+    completed: {
+      label: "Completed",
+      color: "#8B5CF6",
+    },
+    inProgress: {
+      label: "In Progress",
+      color: "#60A5FA",
+    },
+    pending: {
+      label: "Pending",
+      color: "#E5E7EB",
+    },
+    IT: {
+      label: "IT Equipment",
+      color: "#8B5CF6",
+    },
+    Office: {
+      label: "Office Supplies",
+      color: "#EC4899",
+    },
+    Services: {
+      label: "Services",
+      color: "#14B8A6",
+    },
+    Manufacturing: {
+      label: "Manufacturing",
+      color: "#F59E0B",
+    },
+    savings: {
+      label: "Savings (CR)",
+      color: "#8B5CF6",
+    },
+  };
+
   return (
     <div className="mb-6 space-y-6">
       <div className="flex items-center justify-between">
@@ -27,6 +110,7 @@ export const ProcurementDashboard = () => {
         </button>
       </div>
       
+      {/* Key Metrics Cards with Icons */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
         <Card className="border border-l-4 border-l-blue-500">
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -36,7 +120,7 @@ export const ProcurementDashboard = () => {
             <div className="flex justify-between items-center">
               <div className="text-4xl font-bold text-blue-500">50</div>
               <div className="bg-blue-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-500"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <ChartBarStacked className="h-6 w-6 text-blue-500" />
               </div>
             </div>
           </CardContent>
@@ -49,7 +133,7 @@ export const ProcurementDashboard = () => {
             <div className="flex justify-between items-center">
               <div className="text-4xl font-bold text-blue-700">11</div>
               <div className="bg-blue-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
               </div>
             </div>
           </CardContent>
@@ -61,21 +145,8 @@ export const ProcurementDashboard = () => {
           <CardContent>
             <div className="flex justify-between items-center">
               <div className="text-4xl font-bold text-amber-600">₹5.6CR</div>
-              <div className="bg-pink-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-l-4 border-l-amber-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Estimated Savings</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-amber-500">₹1.0CR</div>
-              <div className="bg-amber-50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-500"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <div className="bg-amber-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="16"></line><line x1="8" x2="16" y1="12" y2="12"></line></svg>
               </div>
             </div>
           </CardContent>
@@ -87,69 +158,95 @@ export const ProcurementDashboard = () => {
           <CardContent>
             <div className="flex justify-between items-center">
               <div className="text-4xl font-bold text-pink-500">₹2.2L</div>
-              <div className="bg-pink-50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
-              </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-l-4 border-l-blue-600">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total No. of Contracts</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-blue-600">15</div>
-              <div className="bg-blue-50 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-600"><rect width="18" height="18" x="3" y="4" rx="2" ry="2"/><line x1="16" x2="16" y1="2" y2="6"/><line x1="8" x2="8" y1="2" y2="6"/><line x1="3" x2="21" y1="10" y2="10"/></svg>
+              <div className="bg-pink-100 p-2 rounded-full">
+                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500"><path d="M2 17a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z"></path><path d="M2 10a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4H2v-4Z"></path><path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path><path d="M11 14h2"></path></svg>
               </div>
             </div>
           </CardContent>
         </Card>
       </div>
       
+      {/* Charts and Visualizations */}
+      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="lg:col-span-2">
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Event Status</CardTitle>
+              <ChartBar className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <ChartContainer className="h-64" config={chartConfig}>
+                <BarChart data={eventStatusData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Legend content={<ChartLegendContent />} />
+                  <Bar dataKey="completed" stackId="a" fill="#8B5CF6" />
+                  <Bar dataKey="inProgress" stackId="a" fill="#60A5FA" />
+                  <Bar dataKey="pending" stackId="a" fill="#E5E7EB" />
+                </BarChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
+        <div>
+          <Card className="h-full">
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Budget Allocation</CardTitle>
+              <ChartPie className="h-5 w-5 text-gray-500" />
+            </CardHeader>
+            <CardContent>
+              <ChartContainer className="h-64" config={chartConfig}>
+                <PieChart>
+                  <Pie
+                    data={budgetData}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    outerRadius={80}
+                    dataKey="value"
+                    label={({name, value}) => `${name}: ₹${value}CR`}
+                  >
+                    {budgetData.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={entry.color} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                  <Legend />
+                </PieChart>
+              </ChartContainer>
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* Second Row of Charts */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2">
           <Card>
-            <CardHeader>
-              <CardTitle>Event Status</CardTitle>
+            <CardHeader className="flex flex-row items-center justify-between">
+              <CardTitle>Savings Trend</CardTitle>
+              <ChartLine className="h-5 w-5 text-gray-500" />
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <div className="w-20 text-sm font-medium">RFP (23)</div>
-                  <div className="flex gap-1 flex-1">
-                    <div className="h-6 bg-pink-300 rounded text-xs flex items-center justify-center px-2 text-pink-800" style={{width: '20%'}}>11</div>
-                    <div className="h-6 bg-blue-300 rounded text-xs flex items-center justify-center px-2 text-blue-800" style={{width: '10%'}}>7</div>
-                    <div className="h-6 bg-purple-300 rounded text-xs flex items-center justify-center px-2 text-purple-800" style={{width: '30%'}}>19</div>
-                    <div className="h-6 bg-gray-300 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>0</div>
-                    <div className="h-6 bg-gray-400 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>0</div>
-                    <div className="h-6 bg-teal-300 rounded text-xs flex items-center justify-center px-2 text-teal-800" style={{width: '5%'}}>2</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-20 text-sm font-medium">RFQ (11)</div>
-                  <div className="flex gap-1 flex-1">
-                    <div className="h-6 bg-pink-300 rounded text-xs flex items-center justify-center px-2 text-pink-800" style={{width: '10%'}}>4</div>
-                    <div className="h-6 bg-blue-300 rounded text-xs flex items-center justify-center px-2 text-blue-800" style={{width: '10%'}}>5</div>
-                    <div className="h-6 bg-purple-300 rounded text-xs flex items-center justify-center px-2 text-purple-800" style={{width: '15%'}}>9</div>
-                    <div className="h-6 bg-gray-300 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>0</div>
-                    <div className="h-6 bg-gray-400 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>0</div>
-                    <div className="h-6 bg-teal-300 rounded text-xs flex items-center justify-center px-2 text-teal-800" style={{width: '5%'}}>0</div>
-                  </div>
-                </div>
-                <div className="flex items-center gap-2">
-                  <div className="w-20 text-sm font-medium">RFI (16)</div>
-                  <div className="flex gap-1 flex-1">
-                    <div className="h-6 bg-pink-300 rounded text-xs flex items-center justify-center px-2 text-pink-800" style={{width: '10%'}}>4</div>
-                    <div className="h-6 bg-blue-300 rounded text-xs flex items-center justify-center px-2 text-blue-800" style={{width: '10%'}}>6</div>
-                    <div className="h-6 bg-purple-300 rounded text-xs flex items-center justify-center px-2 text-purple-800" style={{width: '15%'}}>10</div>
-                    <div className="h-6 bg-gray-300 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>0</div>
-                    <div className="h-6 bg-gray-400 rounded text-xs flex items-center justify-center px-2 text-gray-800" style={{width: '5%'}}>1</div>
-                    <div className="h-6 bg-teal-300 rounded text-xs flex items-center justify-center px-2 text-teal-800" style={{width: '5%'}}>2</div>
-                  </div>
-                </div>
-              </div>
+              <ChartContainer className="h-64" config={chartConfig}>
+                <LineChart data={savingsData}>
+                  <CartesianGrid strokeDasharray="3 3" vertical={false} />
+                  <XAxis dataKey="month" />
+                  <YAxis />
+                  <Tooltip content={<ChartTooltipContent />} />
+                  <Legend content={<ChartLegendContent />} />
+                  <Line
+                    type="monotone"
+                    dataKey="savings"
+                    stroke="#8B5CF6"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                </LineChart>
+              </ChartContainer>
             </CardContent>
           </Card>
         </div>
