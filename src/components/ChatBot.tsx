@@ -1,17 +1,10 @@
 
 import React, { useState, useRef, useEffect } from "react";
-import { Bot, X, MessageSquare } from "lucide-react";
+import { Bot, X, MessageSquare, PlusCircle, FileText, Calendar, DollarSign } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { useToast } from "@/components/ui/use-toast";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 type Message = {
   id: string;
@@ -33,6 +26,7 @@ const initialMessages: Message[] = [
 type ConversationOption = {
   id: string;
   label: string;
+  icon?: React.ReactNode;
   nextStep?: string;
   response: string;
 };
@@ -40,6 +34,27 @@ type ConversationOption = {
 // Main conversation flow data
 const CONVERSATION_FLOW: Record<string, ConversationOption[]> = {
   main: [
+    {
+      id: "add-budget",
+      label: "Add Budget",
+      icon: <DollarSign className="h-4 w-4" />,
+      nextStep: "budget",
+      response: "Please specify the budget amount and category you'd like to add:",
+    },
+    {
+      id: "create-intake",
+      label: "Create Intake Form",
+      icon: <FileText className="h-4 w-4" />,
+      nextStep: "intake",
+      response: "Let's create a new procurement intake form. What type of purchase are you initiating?",
+    },
+    {
+      id: "remaining-days",
+      label: "Remaining Days",
+      icon: <Calendar className="h-4 w-4" />,
+      nextStep: "days",
+      response: "Here's the status of your ongoing procurement events and their deadlines:",
+    },
     {
       id: "catalog",
       label: "Browse Catalog",
@@ -63,6 +78,129 @@ const CONVERSATION_FLOW: Record<string, ConversationOption[]> = {
       label: "Procurement Policies",
       nextStep: "policy",
       response: "What policy information would you like to know?",
+    },
+  ],
+  budget: [
+    {
+      id: "budget-it",
+      label: "IT Equipment (₹500,000)",
+      nextStep: "budget-confirm",
+      response: "You've selected to add ₹500,000 to the IT Equipment budget. Is this correct?",
+    },
+    {
+      id: "budget-office",
+      label: "Office Supplies (₹200,000)",
+      nextStep: "budget-confirm",
+      response: "You've selected to add ₹200,000 to the Office Supplies budget. Is this correct?",
+    },
+    {
+      id: "budget-manufacturing",
+      label: "Manufacturing (₹1,000,000)",
+      nextStep: "budget-confirm",
+      response: "You've selected to add ₹1,000,000 to the Manufacturing budget. Is this correct?",
+    },
+    {
+      id: "budget-services",
+      label: "Services (₹300,000)",
+      nextStep: "budget-confirm",
+      response: "You've selected to add ₹300,000 to the Services budget. Is this correct?",
+    },
+    {
+      id: "back-main",
+      label: "Back to Main Menu",
+      nextStep: "main",
+      response: "What else can I help you with?",
+    },
+  ],
+  "budget-confirm": [
+    {
+      id: "confirm-yes",
+      label: "Yes, Add Budget",
+      response: "Budget has been added successfully! The updated budget allocation is now reflected in your dashboard.",
+      nextStep: "main",
+    },
+    {
+      id: "confirm-no",
+      label: "No, Go Back",
+      nextStep: "budget",
+      response: "Let's try again. What budget would you like to add?",
+    },
+  ],
+  intake: [
+    {
+      id: "intake-it",
+      label: "IT Equipment",
+      nextStep: "intake-details",
+      response: "Let's set up an intake form for IT Equipment procurement. What specific equipment are you looking for?",
+    },
+    {
+      id: "intake-office",
+      label: "Office Supplies",
+      nextStep: "intake-details",
+      response: "Let's set up an intake form for Office Supplies procurement. What specific supplies are you looking for?",
+    },
+    {
+      id: "intake-services",
+      label: "Professional Services",
+      nextStep: "intake-details",
+      response: "Let's set up an intake form for Professional Services procurement. What specific services are you looking for?",
+    },
+    {
+      id: "back-main",
+      label: "Back to Main Menu",
+      nextStep: "main",
+      response: "What else can I help you with?",
+    },
+  ],
+  "intake-details": [
+    {
+      id: "intake-urgent",
+      label: "Urgent Request",
+      nextStep: "intake-confirm",
+      response: "You've marked this as an urgent request. This will be prioritized in the approval workflow.",
+    },
+    {
+      id: "intake-standard",
+      label: "Standard Request",
+      nextStep: "intake-confirm",
+      response: "You've selected a standard request. This will follow the normal approval process.",
+    },
+  ],
+  "intake-confirm": [
+    {
+      id: "intake-submit",
+      label: "Submit Intake Form",
+      response: "Thank you! Your intake form has been submitted with ID: INTAKE-2025-0132. You'll receive updates on approvals via email.",
+      nextStep: "main",
+    },
+    {
+      id: "back-intake",
+      label: "Go Back",
+      nextStep: "intake",
+      response: "Let's modify your intake form. What would you like to change?",
+    },
+  ],
+  days: [
+    {
+      id: "days-rfp",
+      label: "RFP Deadlines",
+      response: "Current RFP Deadlines:\n- IT Hardware RFP: 8 days remaining\n- Cloud Services RFP: 15 days remaining\n- Security Audit RFP: 5 days remaining",
+    },
+    {
+      id: "days-rfq",
+      label: "RFQ Deadlines",
+      response: "Current RFQ Deadlines:\n- Office Furniture RFQ: 3 days remaining\n- Manufacturing Equipment RFQ: 12 days remaining",
+    },
+    {
+      id: "days-contracts",
+      label: "Contract Renewals",
+      response: "Upcoming Contract Renewals:\n- Software Licenses: 30 days remaining\n- Maintenance Services: 45 days remaining\n- Facility Management: 60 days remaining",
+    },
+    {
+      id: "back-main",
+      label: "Back to Main Menu",
+      nextStep: "main",
+      response: "What else can I help you with?",
     },
   ],
   catalog: [
@@ -213,8 +351,8 @@ export const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [currentOptions, setCurrentOptions] = useState<ConversationOption[]>(CONVERSATION_FLOW.main);
   const [currentStep, setCurrentStep] = useState<string>("main");
-  const [selectedOption, setSelectedOption] = useState<string>("");
   const [isOpen, setIsOpen] = useState(false);
+  const chatBotRef = useRef<HTMLDivElement>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
@@ -222,6 +360,24 @@ export const ChatBot = () => {
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
+  
+  // Close chatbot when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        chatBotRef.current && 
+        !chatBotRef.current.contains(event.target as Node) && 
+        isOpen
+      ) {
+        setIsOpen(false);
+      }
+    };
+    
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [isOpen]);
 
   const handleOptionSelect = (optionId: string) => {
     // Find the selected option
@@ -256,15 +412,17 @@ export const ChatBot = () => {
       }
 
       // Show toast notifications for certain actions
-      if (optionId.startsWith("order-") && !optionId.includes("back")) {
+      if (optionId === "confirm-yes") {
         toast({
-          title: "Order Initiated",
-          description: "Your order has been initiated successfully!",
+          title: "Budget Added",
+          description: "Your budget has been added successfully!",
+        });
+      } else if (optionId === "intake-submit") {
+        toast({
+          title: "Intake Form Submitted",
+          description: "Your intake form has been submitted successfully!",
         });
       }
-      
-      // Reset selected option
-      setSelectedOption("");
     }, 500);
   };
 
@@ -275,7 +433,7 @@ export const ChatBot = () => {
   return (
     <div className="fixed bottom-5 right-5 z-50">
       {isOpen ? (
-        <div className="flex flex-col h-[500px] w-[350px] shadow-lg rounded-lg overflow-hidden">
+        <div ref={chatBotRef} className="flex flex-col h-[500px] w-[350px] shadow-lg rounded-lg overflow-hidden">
           <div className="flex items-center justify-between bg-purple-600 text-white p-3">
             <div className="flex items-center gap-2">
               <Bot className="h-6 w-6" />
@@ -324,37 +482,19 @@ export const ChatBot = () => {
           </div>
 
           <div className="border-t p-3 bg-white">
-            <div className="flex flex-col gap-3">
-              <Select value={selectedOption} onValueChange={handleOptionSelect}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Select an option..." />
-                </SelectTrigger>
-                <SelectContent position="popper">
-                  {currentOptions.map((option) => (
-                    <SelectItem key={option.id} value={option.id}>
-                      {option.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-              
-              <div className="flex flex-wrap gap-2">
-                {currentOptions.map((option) => (
-                  <Button
-                    key={option.id}
-                    variant="outline"
-                    size="sm"
-                    onClick={() => handleOptionSelect(option.id)}
-                    className="flex-grow"
-                  >
-                    {option.label}
-                  </Button>
-                ))}
-              </div>
-              
-              <div className="text-xs text-slate-500 mt-1">
-                Select an option to proceed with your procurement request
-              </div>
+            <div className="flex flex-wrap gap-2">
+              {currentOptions.map((option) => (
+                <Button
+                  key={option.id}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handleOptionSelect(option.id)}
+                  className="flex items-center gap-2 text-left justify-start px-3 py-2 h-auto"
+                >
+                  {option.icon}
+                  <span>{option.label}</span>
+                </Button>
+              ))}
             </div>
           </div>
         </div>

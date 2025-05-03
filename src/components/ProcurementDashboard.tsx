@@ -23,7 +23,13 @@ import {
   Tooltip,
   Legend,
 } from "recharts";
-import { ChartBarStacked, ChartBar, ChartPie, ChartLine } from "lucide-react";
+import { ChartBarStacked, ChartBar, ChartPie, ChartLine, Users, DollarSign } from "lucide-react";
+import {
+  Tooltip as UITooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 export const ProcurementDashboard = () => {
   // Data for the event status chart
@@ -41,13 +47,52 @@ export const ProcurementDashboard = () => {
     { name: "Manufacturing", value: 0.9, color: "#F59E0B" },
   ];
 
-  // Data for the savings trend chart
+  // Extended data for the savings trend chart
   const savingsData = [
-    { month: "Jan", savings: 0.1 },
-    { month: "Feb", savings: 0.3 },
-    { month: "Mar", savings: 0.4 },
-    { month: "Apr", savings: 0.7 },
-    { month: "May", savings: 1.0 },
+    { month: "Jan", savings: 0.1, budget: 0.5 },
+    { month: "Feb", savings: 0.3, budget: 0.8 },
+    { month: "Mar", savings: 0.4, budget: 1.0 },
+    { month: "Apr", savings: 0.7, budget: 1.2 },
+    { month: "May", savings: 1.0, budget: 1.5 },
+    { month: "Jun", savings: 1.2, budget: 1.7 },
+    { month: "Jul", savings: 1.5, budget: 1.8 },
+    { month: "Aug", savings: 1.7, budget: 2.0 },
+  ];
+
+  // Event trend data for tooltips
+  const eventsData = [
+    { month: "Jan", events: 12 },
+    { month: "Feb", events: 15 },
+    { month: "Mar", events: 18 },
+    { month: "Apr", events: 22 },
+    { month: "May", events: 50 },
+  ];
+
+  // Suppliers trend data for tooltips
+  const suppliersData = [
+    { month: "Jan", suppliers: 4 },
+    { month: "Feb", suppliers: 6 },
+    { month: "Mar", suppliers: 8 },
+    { month: "Apr", suppliers: 10 },
+    { month: "May", suppliers: 11 },
+  ];
+
+  // Budget trend data for tooltips
+  const budgetTrendData = [
+    { month: "Jan", budget: 1.2 },
+    { month: "Feb", budget: 2.1 },
+    { month: "Mar", budget: 3.4 },
+    { month: "Apr", budget: 4.2 },
+    { month: "May", budget: 5.6 },
+  ];
+
+  // Spend trend data for tooltips
+  const spendData = [
+    { month: "Jan", spend: 0.4 },
+    { month: "Feb", spend: 0.7 },
+    { month: "Mar", spend: 1.2 },
+    { month: "Apr", spend: 1.8 },
+    { month: "May", spend: 2.2 },
   ];
 
   // Config for the charts
@@ -84,7 +129,29 @@ export const ProcurementDashboard = () => {
       label: "Savings (CR)",
       color: "#8B5CF6",
     },
+    budget: {
+      label: "Budget Allocation (CR)",
+      color: "#60A5FA",
+    },
   };
+
+  // Generate mini line chart for tooltips
+  const generateMiniChart = (data: any[], dataKey: string, color: string) => (
+    <LineChart width={200} height={100} data={data}>
+      <CartesianGrid strokeDasharray="3 3" vertical={false} />
+      <XAxis dataKey="month" tick={{ fontSize: 10 }} />
+      <YAxis tick={{ fontSize: 10 }} />
+      <Tooltip />
+      <Line 
+        type="monotone" 
+        dataKey={dataKey} 
+        stroke={color} 
+        strokeWidth={2}
+        dot={{ r: 2 }}
+        activeDot={{ r: 4 }}
+      />
+    </LineChart>
+  );
 
   return (
     <div className="mb-6 space-y-6">
@@ -110,61 +177,106 @@ export const ProcurementDashboard = () => {
         </button>
       </div>
       
-      {/* Key Metrics Cards with Icons */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <Card className="border border-l-4 border-l-blue-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total No. of Events</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-blue-500">50</div>
-              <div className="bg-blue-100 p-2 rounded-full">
-                <ChartBarStacked className="h-6 w-6 text-blue-500" />
+      {/* Key Metrics Cards with Icons and Tooltips */}
+      <TooltipProvider>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Card className="border border-l-4 border-l-blue-500 cursor-help transition-all hover:shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Total No. of Events</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div className="text-4xl font-bold text-blue-500">50</div>
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <Users className="h-6 w-6 text-blue-500" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent className="p-0 bg-white border-none shadow-xl w-[220px]">
+              <div className="p-2">
+                <h4 className="font-semibold mb-2">Events Trend</h4>
+                {generateMiniChart(eventsData, "events", "#3B82F6")}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-l-4 border-l-blue-700">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Unique Supplier</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-blue-700">11</div>
-              <div className="bg-blue-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-700"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M22 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
+            </TooltipContent>
+          </UITooltip>
+          
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Card className="border border-l-4 border-l-blue-700 cursor-help transition-all hover:shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Unique Supplier</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div className="text-4xl font-bold text-blue-700">11</div>
+                    <div className="bg-blue-100 p-2 rounded-full">
+                      <Users className="h-6 w-6 text-blue-700" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent className="p-0 bg-white border-none shadow-xl w-[220px]">
+              <div className="p-2">
+                <h4 className="font-semibold mb-2">Suppliers Growth</h4>
+                {generateMiniChart(suppliersData, "suppliers", "#1D4ED8")}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-l-4 border-l-amber-600">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Budget</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-amber-600">₹5.6CR</div>
-              <div className="bg-amber-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-amber-600"><circle cx="12" cy="12" r="10"></circle><line x1="12" x2="12" y1="8" y2="16"></line><line x1="8" x2="16" y1="12" y2="12"></line></svg>
+            </TooltipContent>
+          </UITooltip>
+          
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Card className="border border-l-4 border-l-amber-600 cursor-help transition-all hover:shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Total Budget</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div className="text-4xl font-bold text-amber-600">₹5.6CR</div>
+                    <div className="bg-amber-100 p-2 rounded-full">
+                      <DollarSign className="h-6 w-6 text-amber-600" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent className="p-0 bg-white border-none shadow-xl w-[220px]">
+              <div className="p-2">
+                <h4 className="font-semibold mb-2">Budget Growth</h4>
+                {generateMiniChart(budgetTrendData, "budget", "#D97706")}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-        <Card className="border border-l-4 border-l-pink-500">
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium text-gray-500">Total Spend</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="flex justify-between items-center">
-              <div className="text-4xl font-bold text-pink-500">₹2.2L</div>
-              <div className="bg-pink-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-pink-500"><path d="M2 17a1 1 0 0 1 1-1h18a1 1 0 0 1 1 1v3a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1v-3Z"></path><path d="M2 10a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v4H2v-4Z"></path><path d="M6 8V6a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v2"></path><path d="M11 14h2"></path></svg>
+            </TooltipContent>
+          </UITooltip>
+          
+          <UITooltip>
+            <TooltipTrigger asChild>
+              <Card className="border border-l-4 border-l-pink-500 cursor-help transition-all hover:shadow-md">
+                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                  <CardTitle className="text-sm font-medium text-gray-500">Total Spend</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <div className="flex justify-between items-center">
+                    <div className="text-4xl font-bold text-pink-500">₹2.2L</div>
+                    <div className="bg-pink-100 p-2 rounded-full">
+                      <DollarSign className="h-6 w-6 text-pink-500" />
+                    </div>
+                  </div>
+                </CardContent>
+              </Card>
+            </TooltipTrigger>
+            <TooltipContent className="p-0 bg-white border-none shadow-xl w-[220px]">
+              <div className="p-2">
+                <h4 className="font-semibold mb-2">Spend Trend</h4>
+                {generateMiniChart(spendData, "spend", "#EC4899")}
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+            </TooltipContent>
+          </UITooltip>
+        </div>
+      </TooltipProvider>
       
       {/* Charts and Visualizations */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -241,6 +353,14 @@ export const ProcurementDashboard = () => {
                     type="monotone"
                     dataKey="savings"
                     stroke="#8B5CF6"
+                    strokeWidth={2}
+                    dot={{ r: 4 }}
+                    activeDot={{ r: 6 }}
+                  />
+                  <Line
+                    type="monotone"
+                    dataKey="budget"
+                    stroke="#60A5FA"
                     strokeWidth={2}
                     dot={{ r: 4 }}
                     activeDot={{ r: 6 }}
