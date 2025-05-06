@@ -4,6 +4,7 @@ import { ChatBot } from "@/components/ChatBot";
 import { Header } from "@/components/Header";
 import { ProcurementDashboard } from "@/components/ProcurementDashboard";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { Toaster } from "@/components/ui/toaster";
 
 const Index = () => {
   return (
@@ -25,6 +26,7 @@ const Index = () => {
         
         {/* Floating ChatBot */}
         <ChatBot />
+        <Toaster />
       </div>
     </TooltipProvider>
   );
