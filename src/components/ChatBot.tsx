@@ -27,16 +27,6 @@ const initialMessages: Message[] = [
   },
 ];
 
-// Quick action buttons for common queries
-const quickActions = [
-  { id: "add-budget", label: "Add Budget" },
-  { id: "create-intake", label: "Create Intake Form" },
-  { id: "remaining-days", label: "Remaining Days" },
-  { id: "catalog", label: "Browse Catalog" },
-  { id: "order", label: "Order Status" },
-  { id: "vendor", label: "Vendor Management" },
-];
-
 export const ChatBot = () => {
   const [messages, setMessages] = useState<Message[]>(initialMessages);
   const [input, setInput] = useState("");
@@ -131,10 +121,6 @@ export const ChatBot = () => {
     }
   };
 
-  const handleQuickAction = (action: string) => {
-    sendMessage(action);
-  };
-
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     sendMessage(input);
@@ -186,7 +172,7 @@ export const ChatBot = () => {
                       rel="noopener noreferrer"
                       className="inline-block mt-2"
                     >
-                      <Button size="sm" variant="secondary">
+                      <Button size="sm" variant="secondary" className="bg-purple-500 hover:bg-purple-600 text-white">
                         {message.button.label}
                       </Button>
                     </a>
@@ -208,20 +194,6 @@ export const ChatBot = () => {
           </div>
 
           <div className="border-t p-3 bg-white">
-            <div className="flex flex-wrap gap-2 mb-3">
-              {quickActions.map((action) => (
-                <Button
-                  key={action.id}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => handleQuickAction(action.label)}
-                  className="text-left justify-start px-3 py-2 h-auto"
-                >
-                  <span>{action.label}</span>
-                </Button>
-              ))}
-            </div>
-            
             <form onSubmit={handleSubmit} className="flex gap-2">
               <Input
                 ref={inputRef}
