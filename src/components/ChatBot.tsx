@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 type Message = {
@@ -36,6 +37,7 @@ export const ChatBot = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
+  const navigate = useNavigate();
 
   // Auto-scroll to the bottom of messages
   useEffect(() => {
@@ -121,6 +123,15 @@ export const ChatBot = () => {
     }
   };
 
+  const handleButtonClick = (label: string) => {
+    // Encode the button text for the URL
+    const encodedText = encodeURIComponent(label);
+    // Close the chat when navigating
+    setIsOpen(false);
+    // Navigate to the button page
+    navigate(`/button/${encodedText}`);
+  };
+
   const handleSubmit = (e?: React.FormEvent) => {
     if (e) e.preventDefault();
     sendMessage(input);
@@ -166,16 +177,14 @@ export const ChatBot = () => {
                 >
                   <p className="whitespace-pre-wrap">{message.content}</p>
                   {message.button && (
-                    <a 
-                      href={message.button.link} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                      className="inline-block mt-2"
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="bg-purple-500 hover:bg-purple-600 text-white mt-2"
+                      onClick={() => handleButtonClick(message.button!.label)}
                     >
-                      <Button size="sm" variant="secondary" className="bg-purple-500 hover:bg-purple-600 text-white">
-                        {message.button.label}
-                      </Button>
-                    </a>
+                      {message.button.label}
+                    </Button>
                   )}
                   <div
                     className={`text-xs mt-1 ${
